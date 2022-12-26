@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Transfers Project</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <style>
+        div {
+            display: flex;
+            justify-content: center;
+            margin: 10px;
+        }
+        .btnConnect {
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="connect">
+        <Button id="btnConnect">Conect Metamask</Button>
+    </div>
+    <div id="network" style="display: none;">
+        <h4>Network:</h4> <h4>Incoming</h4>
+    </div>
+    <div id="nameInput" style="display: none;">
+        Name: <input id="inputName" type="text" />
+    </div>
+    <div>
+        <button id="setName" style="display: none;">Change Name</button>
+    </div>
+    <div id="name">&nbsp;</div>
+
+    <script>
+
+        var provider = window.ethereum;
+        var account = "";
+        const abi = [ { "inputs": [], "name": "name", "outputs": [ { "internalType": "string", "name": "", "type": "string" } ], "stateMutability": "view", "type": "function", "constant": true }, { "inputs": [ { "internalType": "string", "name": "_newName", "type": "string" } ], "name": "setName", "outputs": [], "stateMutability": "nonpayable", "type": "function" } ];
+        const contractAddress = '0x66ed75220d953252ee7c76200cFbcF2e9A05536c'; //Alter this link if do you want to execute in ganache local blockchain
+        
+
+        async function run() {
+
+            if (!provider) {
+
+                document.getElementById("connect").innerHTML = "Please, install metamask";
+
+            } else {
+
+                let accounts = await provider.request({method: 'eth_accounts'})
+
+                if (accounts.length == 0) {
+
+                    document.getElementById("btnConnect").style.display = 'block';
+                    document.getElementById("btnConnect").addEventListener('click', connectMetamask)
+                } else {
+
+                    document.getElementById("connect").innerHTML = accounts[0];
+                    account = accounts[0];
+
+                    let chainId = await provider.request({method: 'eth_chainId'});
+                    if (chainId != 0x61) {
+                        alert('Please, connect into Binance Smart Chain network')
+                    } else {
+                        document.getElementById("setName").style.display = 'block';
+                        document.getElementById("network").style.display = 'flex';
+                        document.getElementById("nameInput").style.display = 'flex';
+
+                        document.getElementById("setName").addEventListener('click', setName);
+                        getName();
+                    }                    
+
+                }
+
+            }
+            
+        }
+
+        async function connectMetamask() {
+
+            let accounts = await provider.request({method: 'eth_requestAccounts'});
+            document.getElementById("connect").innerHTML = accounts[0];
+            account = accounts[0];
+
+            document.getElementById("setName").style.display = 'block';
+            document.getElementById("network").style.display = 'flex';
+            document.getElementById("nameInput").style.display = 'flex';
+
+            getName();
+        }
+
+        async function getName() {
+
+            let web3 = await new Web3(provider);
+            let contract = await new web3.eth.Contract(abi, contractAddress);
+
+            let name = await contract.methods.name().call();
+            document.getElementById("name").innerHTML = name;
+        }
+
+        async function setName() {
+
+            let web3 = await new Web3(provider);
+            let contract = await new web3.eth.Contract(abi, contractAddress);
+
+            var newName = document.getElementById("inputName").value;
+            let receipt = await contract.methods.setName(newName).send({from:account}, function(error, result){
+               
+                if(result) {
+                    console.log('Sucessfull, follow hash transaction: ' + result);
+                } else {
+                    console.log('Error: ' + error);
+                }
+
+           });
+           
+           getName();
+
+        }
+
+        run();
+
+        ethereum.on('accountsChanged', () => {connectMetamask()});
+        ethereum.on('chainChanged', () => window.location.reload());
+    </script>
+</body>
+</html>
