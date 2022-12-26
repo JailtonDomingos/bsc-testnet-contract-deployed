@@ -14,3 +14,5 @@ Testing Project:
   - 2nd option:
     - Go to https://cerulean-malasada-0dd3db.netlify.app/
       - Wait for the name that already exists in the contract to appear (It will appear below the 'ChangeName' button), after that you can change the name as you wish
+
+> Always look at the console.log, it will show the transaction hash.
