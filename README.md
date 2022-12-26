@@ -20,3 +20,4 @@ Testing Project:
 
 > Always look at the console.log, it will show the transaction hash.
 > You can follow hash transaction in: https://testnet.bscscan.com/
+> This project have a BUG. If you want disconect you metamask, first close DApp or Go Live page before.
