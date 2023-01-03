@@ -1,4 +1,4 @@
-# bsc-testnet-contract-deployed
+## bsc-testnet-contract-deployed
 Simple contract deployed on BSC Testnet.
 
 This project are a implementation of a contract with setName function and a simple page to manipulate data into BSC Testnet.
